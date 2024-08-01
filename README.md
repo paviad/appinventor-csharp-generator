@@ -50,21 +50,21 @@ Gets converted to this code:
 namespace Testa {
     [Aia]
     public partial class HelloPurr {
-        public bool MAIN() {
-            bool LocalFunction2() {
+        public async Task<bool> MAIN() {
+            async Task<bool> LocalFunction2() {
                 bool Success = false;
                 bool Failure = false;
                 int Count = 1;
-                bool LocalFunction1() {
+                async Task<bool> LocalFunction1() {
                     while ((!(Success) && !(Failure) && (Count != 3))) {
-                        if ((Detect("Select All") && Detect("Unload"))) {
-                            Click("Select All");
-                            Click("Unload");
+                        if ((await Detect("Select All") && await Detect("Unload"))) {
+                            await Click("Select All");
+                            await Click("Unload");
                             Success = true;
                         }
                         else {
-                            if (Detect("Taskbar Icon")) {
-                                Click("Taskbar Icon");
+                            if (await Detect("Taskbar Icon")) {
+                                await Click("Taskbar Icon");
                             }
                             else {
                                 Failure = true;
@@ -74,37 +74,37 @@ namespace Testa {
                     }
                     return Success;
                 }
-                return LocalFunction1();
+                return await LocalFunction1();
             }
-            return LocalFunction2();
+            return await LocalFunction2();
         }
         
-        public bool Detect(string Template) {
-            return Invoke_Detect(Template);
+        public async Task<bool> Detect(string Template) {
+            return await Invoke_Detect(Template);
         }
         
-        public bool Testa() {
-            bool LocalFunction5() {
-                Click("Taskbar Icon");
+        public async Task<bool> Testa() {
+            async Task<bool> LocalFunction5() {
+                await Click("Taskbar Icon");
                 return true;
             }
-            bool LocalFunction4() {
-                Click("Taskbar Icon");
+            async Task<bool> LocalFunction4() {
+                await Click("Taskbar Icon");
                 return true;
             }
-            bool LocalFunction3() {
-                Click("Taskbar Icon");
+            async Task<bool> LocalFunction3() {
+                await Click("Taskbar Icon");
                 return true;
             }
-            return LocalFunction3() ? LocalFunction4() : LocalFunction5();
+            return await LocalFunction3() ? await LocalFunction4() : await LocalFunction5();
         }
         
-        public void Move(int x, int y) {
-            Invoke_Move(x, y);
+        public async Task Move(int x, int y) {
+            await Invoke_Move(x, y);
         }
         
-        public void Click(string Location) {
-            Invoke_Click(Location);
+        public async Task Click(string Location) {
+            await Invoke_Click(Location);
         }
         
     }

@@ -14,7 +14,7 @@ namespace AiaGenerator {
         private readonly Dictionary<string, string> _symbolTable = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _symbolTableReplacements = new Dictionary<string, string>();
 
-        private int _lfCount = 1;
+        private int _lfCount;
 
         public void Initialize(GeneratorInitializationContext context) {
         }
@@ -44,6 +44,8 @@ namespace AiaGenerator {
         }
 
         public string Read(string aiaPath) {
+            _lfCount = 1;
+
             _symbolTable["Move@x"] = "int";
             _symbolTable["Move@y"] = "int";
             _symbolTable["Detect@Template"] = "string";
@@ -83,7 +85,7 @@ namespace AiaGenerator {
         private int AddLocalFunction(IEnumerable<string> sb, string type) {
             var sb2 = new List<string>();
             var lfid = _lfCount++;
-            sb2.Add($"{type} LocalFunction{lfid}() {{");
+            sb2.Add($"async Task<{type}> LocalFunction{lfid}() {{");
             sb2.AddRange(sb);
             sb2.Add("}");
             _localFunctions.Add(sb2);
@@ -117,7 +119,7 @@ namespace AiaGenerator {
             var lfid = AddLocalFunction(sb, type);
 
             var sb2 = new List<string> {
-                $"LocalFunction{lfid}()",
+                $"await LocalFunction{lfid}()",
             };
 
             return (sb2, type);
@@ -263,7 +265,7 @@ namespace AiaGenerator {
             var lfid = AddLocalFunction(sb, type1);
 
             var sb3 = new List<string> {
-                $"LocalFunction{lfid}()",
+                $"await LocalFunction{lfid}()",
             };
 
             return (sb3, type1);
@@ -383,10 +385,10 @@ namespace AiaGenerator {
             if (funcName.StartsWith("Invoke")) {
                 var libName = args[0].Substring(1, args[0].Length - 2);
                 var argsAgg2 = string.Join(", ", args.Skip(1));
-                sb.Add($"Invoke_{libName}({argsAgg2})");
+                sb.Add($"await Invoke_{libName}({argsAgg2})");
             }
             else {
-                sb.Add($"{funcName}({argsAgg})");
+                sb.Add($"await {funcName}({argsAgg})");
             }
 
             var type = GetFromSymbolTable(funcName);
@@ -413,11 +415,11 @@ namespace AiaGenerator {
             if (funcName.StartsWith("Invoke")) {
                 var libName = args[0].Substring(1, args[0].Length - 2);
                 var argsAgg2 = string.Join(", ", args.Skip(1));
-                sb.Add($"Invoke_{libName}({argsAgg2})");
+                sb.Add($"await Invoke_{libName}({argsAgg2})");
                 type = _symbolTable[libName];
             }
             else {
-                sb.Add($"{funcName}({argsAgg})");
+                sb.Add($"await {funcName}({argsAgg})");
                 type = GetFromSymbolTable(funcName);
             }
 
@@ -439,7 +441,7 @@ namespace AiaGenerator {
             });
             var parameters = string.Join(", ", paramsWithTypes);
 
-            sb.Add($"public void {methodName}({parameters}) {{");
+            sb.Add($"public async Task {methodName}({parameters}) {{");
 
             var bodyBlock = block.Statements?.Single().Block;
             if (bodyBlock != null) {
@@ -479,7 +481,7 @@ namespace AiaGenerator {
             var body = programBlock.Item1.Single();
             var retVal = programBlock.Item2;
 
-            sb.Add($"public {retVal} {methodName}({parameters}) {{");
+            sb.Add($"public async Task<{retVal}> {methodName}({parameters}) {{");
             sb.Add($"    return {body}");
             sb.Add("}");
             sb.Add("");

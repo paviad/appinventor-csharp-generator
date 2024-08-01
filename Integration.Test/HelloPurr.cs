@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Testa {
     public partial class HelloPurr {
-        bool Invoke_Detect(string template) {
+        async Task<bool> Invoke_Detect(string template) {
             return true;
         }
 
-        void Invoke_Move(int x, int y) {
+        async Task Invoke_Move(int x, int y) {
 
         }
 
-        void Invoke_Click(string template) {
+        async Task Invoke_Click(string template) {
 
         }
     }
